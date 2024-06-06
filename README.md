@@ -6,6 +6,7 @@ Practicum environment and application  blueprint for GenAI Training
     ```
     poetry shell  
     poetry update
+    export PYTHONPATH=":./python"
     ``` 
 - edit app_conf.yaml 
     - Change default llm and embeddings model if needed

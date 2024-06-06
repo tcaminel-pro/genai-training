@@ -42,6 +42,7 @@
         "pydantic",
         "pygraphviz",
         "Pylance",
+        "PYTHONPATH",
         "selectbox",
         "spacy",
         "streamlit",
