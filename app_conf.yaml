@@ -1,0 +1,61 @@
+# Selectable LLM, embedding models, vector store etc HARD CODED in the code
+# DO NOT EDIT, except if you add new stuff in code !
+# In the future, that could be generated, or useless if everything is configured in YAML
+factories:
+  llm: 
+    - gpt_35_openai
+    - gpt_35_edenai
+    - llama2_70_deepinfra
+    - llama2_70_groq
+    - llama3_70_groq
+    - mixtral_7x8_deepinfra
+    - mixtral_7x8_groq
+    - gemini_pro_google
+
+  embeddings:
+    - multilingual_MiniLM_local
+    - ada_002_openai
+    - mistral_1024_edenai 
+    - camembert_large_local
+
+  vector_store:
+    - Chroma
+    - Chroma_in_memory
+  
+  monitoring:
+    - langsmith
+    - lunary
+    - none
+
+
+# Agent configuration
+default:
+  llm:
+    default_model:  gpt_4o_edenai   # #gpt_35_openai
+    cache : sqlite
+  embeddings:
+    default_model: mistral_1024_edenai 
+    cache: ${HOME}/hf_models
+  vector_store:
+    default: Chroma
+    path: ${HOME}/chromadb
+    default_collection: "training_session"
+  documents:
+    base: ./use_case_data
+  monitoring: 
+    default: langsmith
+    project: GenAI_demo
+
+  chains:
+    path: python.ai_chains
+    modules:
+      - joke 
+
+
+cloud_openai:    
+  llm:
+    default_model: gpt_35_openai
+    cache : memory
+  embeddings:
+    default_model: ada_002_openai
+
