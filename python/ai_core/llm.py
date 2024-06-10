@@ -274,7 +274,8 @@ class LlmFactory(BaseModel):
                 provider=provider,
                 model=model,
                 max_tokens=self.max_tokens,
-                edenai_api_url="https://staging-api.edenai.run/v2",                
+                # edenai_api_url="https://staging-api.edenai.run/v2",
+                edenai_api_key=None,  # set in env. variable
                 temperature=self.temperature,
             )
 

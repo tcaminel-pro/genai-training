@@ -1,5 +1,6 @@
 import importlib
 import importlib.util
+import os
 from pathlib import Path
 
 import streamlit as st
@@ -14,7 +15,7 @@ from python.config import get_config_str
 from python.GenAI_Lab import config_sidebar
 
 st.set_page_config(layout="wide")
-st.title("💬 Runnable Playground")
+st.title("🔬📝 Runnable Playground")
 
 config_sidebar()
 
@@ -71,13 +72,10 @@ with st.expander("Runnable Graph", expanded=False):
     else:
         runnable = runnable_desc.get(config)
         drawing = runnable.get_graph().draw_png()  # type: ignore
-        #drawing = runnable.get_graph().draw_mermaid_png()
+        # drawing = runnable.get_graph().draw_mermaid_png()
 
         st.image(drawing)
         st.write("")
-
-# selected_runnable = st.selectbox("Select a Runnable", list(RUNNABLES.keys()))
-
 
 with st.form("my_form"):
     input = st.text_area("Enter input:", first_example.query[0], placeholder="")
@@ -86,6 +84,6 @@ with st.form("my_form"):
         with tracing_v2_enabled() as cb:
             result = runnable_desc.invoke(input, config)
             st.write(result)
+        if os.environ["LANGCHAIN_TRACING_V2"] == "true":
             url = cb.get_run_url()
-
-        st.write("[trace](%s)" % url)
+            st.write("[trace](%s)" % url)

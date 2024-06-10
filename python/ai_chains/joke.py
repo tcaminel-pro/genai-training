@@ -13,20 +13,24 @@ from python.ai_core.chain_registry import (
 from python.ai_core.llm import get_llm
 from python.ai_core.prompts import def_prompt
 
-user_prompt = """Tell me a joke on {topic}"""
-joke_chain = (
-    {"topic": RunnablePassthrough()}
-    | def_prompt(user=user_prompt)
-    | get_llm()  # get a LLM from configuration
-    | StrOutputParser()
-)
+
+def chain(conf: dict):
+    user_prompt = """Tell me a joke on {topic}"""
+    joke_chain = (
+        {"topic": RunnablePassthrough()}
+        | def_prompt(user=user_prompt)
+        | get_llm()  # get a LLM from configuration
+        | StrOutputParser()
+    )
+    return joke_chain
+
 
 # Register the chain
 register_runnable(
     RunnableItem(
         tag="Agent",
         name="Joke",
-        runnable=joke_chain,
+        runnable=chain,
         examples=[Example(query=["French"])],
     )
 )

@@ -1,6 +1,14 @@
 # genai-training
 Practicum environment and application  blueprint for GenAI Training
 
+## Pre-requisite
+- You should have API keys you plan to use in environment variable. <br>
+    ex:
+    ```
+    export EDENAI_API_KEY='eyJhbGc.....'
+    export AZURE_OPENAI_API_KEY="18f5ac....'
+    ```
+
 ## Install
 - Create environment and update
     ```
