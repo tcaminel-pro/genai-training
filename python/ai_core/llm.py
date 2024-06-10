@@ -63,6 +63,12 @@ KNOWN_LLM_LIST = [
         model="gpt-3.5-turbo-0125",
         key="OPENAI_API_KEY",
     ),
+    LLM_INFO(
+        id="gpt_4o_openai",
+        cls="ChatOpenAI",
+        model="gpt-4o",
+        key="OPENAI_API_KEY",
+    ),
     #
     ####  ChatDeepInfra ### https://deepinfra.com/models/text-generation
     LLM_INFO(
@@ -155,9 +161,21 @@ KNOWN_LLM_LIST = [
         key="EDENAI_API_KEY",
     ),
     LLM_INFO(
+        id="gpt_4_azure",
+        cls="AzureChatOpenAI",
+        model="gpt4-turbo/2023-05-15",
+        key="AZURE_OPENAI_API_KEY",
+    ),
+    LLM_INFO(
+        id="gpt_35_azure",
+        cls="AzureChatOpenAI",
+        model="gpt-35-turbo/2023-05-15",
+        key="AZURE_OPENAI_API_KEY",
+    ),
+    LLM_INFO(
         id="gpt_4o_azure",
         cls="AzureChatOpenAI",
-        model="gpt-4o/024-05-13",
+        model="gpt-4o/2023-05-15",
         key="AZURE_OPENAI_API_KEY",
     ),
 ]
@@ -256,8 +274,7 @@ class LlmFactory(BaseModel):
                 provider=provider,
                 model=model,
                 max_tokens=self.max_tokens,
-                edenai_api_url="https://staging-api.edenai.run/v2",
-                edenai_api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYTczYjA4OGMtOWE5MS00ODdhLWEyNTQtODJmNDI5MDVlNjhmIiwidHlwZSI6ImFwaV90b2tlbiJ9.KGkM6Sqtd0pD-83twNtUdSFtrNJD_u9ZZX3tabcDloA",  # or use `EDENAI_API_KEY` env var
+                edenai_api_url="https://staging-api.edenai.run/v2",                
                 temperature=self.temperature,
             )
 
@@ -292,14 +309,18 @@ class LlmFactory(BaseModel):
         elif self.info.cls == "AzureChatOpenAI":
             from langchain_openai import AzureChatOpenAI
 
-            name, _, version = self.info.model.partition("/")
-
+            name, _, api_version = self.info.model.partition("/")
             llm = AzureChatOpenAI(
                 name=name,
-                api_version=version,
-                model=self.info.model,
+                azure_deployment=name,
+                model=name,  # Not sure it's needed
+                api_version=api_version,
                 temperature=self.temperature,
             )
+            if self.json_mode:
+                llm = cast(
+                    BaseLanguageModel, llm.bind(response_format={"type": "json_object"})
+                )
 
         else:
             raise ValueError(f"unsupported LLM class {self.info.cls}")
@@ -355,7 +376,7 @@ def get_llm(
     """
     Create a BaseLanguageModel object according to a given llm_id.\n
     - If 'llm_id' is None, the LLM is selected from the configuration.
-    - 'json_mode' is not supported or tested for all models
+    - 'json_mode' is not supported or tested for all models (and NOT WELL TESTED)
     - 'configurable' make the LLM configurable at run-time
     - 'with_fallback' add a fallback mechanism (not well tested)
 

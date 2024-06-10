@@ -1,5 +1,5 @@
 """
-Entry point for the Command Line Interface
+Entry point for the Command Line Interface,  and commands
 
 
 """
@@ -17,7 +17,9 @@ from python.ai_core.chain_registry import (
     get_runnable_registry,
     load_modules_with_chains,
 )
-from python.ai_core.llm import set_cache
+from python.ai_core.embeddings import EmbeddingsFactory
+from python.ai_core.llm import LlmFactory, set_cache
+from python.ai_core.vector_store import VectorStoreFactory
 from python.config import get_config_str
 
 # Import modules where runnables are registered
@@ -91,6 +93,21 @@ def define_commands(cli_app: typer.Typer):
                 pprint(runnable.output_schema().schema())
             except Exception:
                 pass
+
+    @cli_app.command()
+    def list_models():
+        """List the LLMs, embeddings models and vector stores that we know"""
+        print("factories:")
+        tab = 2 * " "
+        print(f"{tab}llm:")
+        for model in LlmFactory.known_items():
+            print(f"{tab}{tab}- {model}")
+        print(f"{tab}embeddings:")
+        for model in EmbeddingsFactory.known_items():
+            print(f"{tab}{tab}- {model}")
+        print(f"{tab}vector_store:")
+        for vc in VectorStoreFactory.known_items():
+            print(f"{tab}{tab}- {vc}")
 
 
 if __name__ == "__main__":
